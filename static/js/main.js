@@ -1,17 +1,17 @@
 const users = {};
-const usersContainer = document.getElementById('users');
+const usersContainer = document.getElementById("users");
 
 const GREEN = [0, 200, 0];
 const ORANGE = [255, 165, 0];
 const GRAY = [128, 128, 128];
-const PHASE1 = 3600;        // 60 минут в секундах
-const PHASE2 = 86400;       // 24 часа в секундах
+const PHASE1 = 3600;
+const PHASE2 = 86400;
 
 function lerpColor(c1, c2, t) {
-    const r = Math.round(c1[0] + (c2[0] - c1[0]) * t);
-    const g = Math.round(c1[1] + (c2[1] - c1[1]) * t);
-    const b = Math.round(c1[2] + (c2[2] - c1[2]) * t);
-    return `rgb(${r},${g},${b})`;
+  const r = Math.round(c1[0] + (c2[0] - c1[0]) * t);
+  const g = Math.round(c1[1] + (c2[1] - c1[1]) * t);
+  const b = Math.round(c1[2] + (c2[2] - c1[2]) * t);
+  return `rgb(${r},${g},${b})`;
 }
 
 function createOrUpdateUser(ip, timestampStr) {
@@ -19,8 +19,8 @@ function createOrUpdateUser(ip, timestampStr) {
   let user = users[ip];
 
   if (!user) {
-    const el = document.createElement('div');
-    el.className = 'user new';
+    const el = document.createElement("div");
+    el.className = "user new";
     el.innerHTML = `
       <div class="status" id="status-${ip}"></div>
       <div class="ip">${ip}</div>
@@ -28,12 +28,11 @@ function createOrUpdateUser(ip, timestampStr) {
     `;
     users[ip] = { ip, timestamp, el };
     usersContainer.appendChild(el);
-
-    // Убираем класс "new" после окончания анимации
-    setTimeout(() => el.classList.remove('new'), 600);
+    setTimeout(() => el.classList.remove("new"), 600);
   } else {
     user.timestamp = timestamp;
-    document.getElementById(`timestamp-${ip}`).textContent = timestamp.toLocaleString();
+    document.getElementById(`timestamp-${ip}`).textContent =
+      timestamp.toLocaleString();
   }
 }
 
@@ -41,15 +40,13 @@ function updateColors() {
   const now = new Date();
   const userList = Object.values(users);
 
-  // Сортировка по свежести
-  userList.sort((a, b) => (now - a.timestamp) - (now - b.timestamp));
+  userList.sort((a, b) => now - a.timestamp - (now - b.timestamp));
 
   for (const user of userList) {
     const ageSec = (now - user.timestamp) / 1000;
-    const statusEl = user.el.querySelector('.status');
+    const statusEl = user.el.querySelector(".status");
 
     let color;
-
     if (ageSec <= PHASE1) {
       const t = ageSec / PHASE1;
       color = lerpColor(GREEN, ORANGE, t);
@@ -61,25 +58,19 @@ function updateColors() {
     }
 
     statusEl.style.backgroundColor = color;
-    usersContainer.appendChild(user.el); // Переместить DOM-элемент в нужное место
+    usersContainer.appendChild(user.el);
   }
 
   requestAnimationFrame(updateColors);
 }
 
-// Запускаем обновление цвета и сортировку
 requestAnimationFrame(updateColors);
 
-// WebSocket подключение (замени адрес на свой)
-const ws = new WebSocket("ws://localhost:8080");
+// Подключение к Socket.IO серверу
+const socket = io("http://localhost:3000");
 
-ws.onmessage = (event) => {
-  try {
-    const data = JSON.parse(event.data);
-    if (data.ip && data.timestamp) {
-      createOrUpdateUser(data.ip, data.timestamp);
-    }
-  } catch (e) {
-    console.error("Ошибка обработки сообщения:", e);
+socket.on("user_activity", (data) => {
+  if (data.ip && data.timestamp) {
+    createOrUpdateUser(data.ip, data.timestamp);
   }
-};
+});
