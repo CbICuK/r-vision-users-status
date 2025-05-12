@@ -7,8 +7,12 @@ import sys
 from collections import deque
 from typing import List, Dict
 from flask_socketio import SocketIO, emit
+from flask import Flask, request
 # 10.10.10.10 - - [12/May/2025:12:18:47 +0000] "GET /api/v1/im/incidents/318308/view?_dc=1747052336284 HTTP/1.1" 200 83 "https://10.0.0.1/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 YaBrowser/24.7.0.0 Safari/537.36"
 # Регулярное выражение для парсинга логов Nginx (Combined Log Format)
+
+app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 async def parse_nginx_logs(container_name: str, buffer_size: int = 100, buffer_timeout: float = 1.0):
     try:
@@ -40,6 +44,10 @@ async def parse_nginx_logs(container_name: str, buffer_size: int = 100, buffer_t
                         f"Referer: {log_data['referer']}"
                         f"User-Agent: {log_data['user_agent']}"
                     )
+                    socketio.emit("user_activity", {
+                        "ip": log_data['ip'],
+                        "timestamp": log_data['time']
+                    });
                     
                     if int(log_data['status']) >= 500:
                         print("Обнаружена ошибка сервера!")

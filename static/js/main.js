@@ -67,7 +67,7 @@ function updateColors() {
 requestAnimationFrame(updateColors);
 
 // Подключение к Socket.IO серверу
-const socket = io("http://localhost:3000");
+const socket = io();
 
 socket.on("user_activity", (data) => {
   if (data.ip && data.timestamp) {
