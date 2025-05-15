@@ -43,7 +43,7 @@ async def parse_nginx_logs(container_name: str, buffer_size: int = 100, buffer_t
                             if redis_connect.get(log_data['ip']):
                                 user = json.loads(redis_connect.get(log_data['ip']).decode('utf-8'))
                                 user[2] = datetime.strftime(date_time, "%Y-%m-%dT%H:%M:%S.%f%z")
-                                redis_connect.set(user[0], json.dumps(user))
+                                redis_connect.set(user[0], json.dumps(user), ex=86400)
                                 user = user[1]
                             else:
                                 user = list(get_user_from_db(log_data['ip']))
