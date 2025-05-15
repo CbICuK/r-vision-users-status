@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <title>Мониторинг пользователей</title>
-  <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
-  <script src="static/js/socket.io.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='css/style.css') }}">
 </head>
 <body>
   <h1>Мониторинг пользователей</h1>
   <div id="users"></div>
-  <script src="/static/js/main.js"></script>
+  <script src="{{ url_for('static', path='js/main.js') }}"></script>
 </body>
 </html>

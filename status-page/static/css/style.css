@@ -1,28 +1,32 @@
 body {
   font-family: sans-serif;
-  background: #f0f0f0;
+  background: rgba(39, 44, 62);
   padding: 20px;
 }
 
 h1 {
   margin-bottom: 20px;
+  color: rgba(221, 222, 226);
 }
 
 .user {
   display: flex;
   align-items: center;
-  background: #fff;
+  background: rgba(39, 44, 62, 0.9);
   padding: 10px 15px;
   margin-bottom: 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 1);
   opacity: 1;
   transform: translateY(0);
-  transition: background-color 0.2s linear;
+  transition: transform 0.8s ease, background-color 0.2s linear;
+  will-change: transform;
+  position: relative;
+  min-height: 20px;
 }
 
 .user.new {
-  animation: fadeInUp 0.5s ease-out;
+  animation: fadeInUp 3s ease-out;
 }
 
 @keyframes fadeInUp {
@@ -47,9 +51,10 @@ h1 {
 .ip {
   font-weight: bold;
   margin-right: auto;
+  color: rgba(221, 222, 226);
 }
 
 .timestamp {
   font-size: 0.9em;
-  color: #666;
+  color: rgba(221, 222, 226);
 }

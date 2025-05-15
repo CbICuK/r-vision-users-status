@@ -1,0 +1,63 @@
+version: "3"
+
+services:
+  status-page:
+    container_name: online-status-page
+    depends_on:
+      - redis
+    hostname: "web"
+    build: ./status-page
+    environment:
+      - TZ='Europe/Moscow'
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    user: appuser
+    env_file:
+      - ./.env
+    networks:
+      - smp
+
+  redis:
+    container_name: online-redis
+    hostname: redis
+    build:
+      context: ./redis
+      dockerfile: ./Dockerfile
+    restart: always
+    user: redis
+    environment:
+      - TZ='Europe/Moscow'
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "/app/redis.conf"]
+    networks:
+      - smp
+
+  log-reader:
+    container_name: online-log-reader
+    depends_on:
+      - redis
+    hostname: "logreader"
+    build: ./log-reader
+    environment:
+      - TZ='Europe/Moscow'
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: appuser
+    env_file:
+      - ./.env
+    networks:
+      - smp
+
+
+volumes:
+  redis_data:
+
+networks:
+  smp:
+    name: smp
+    external: true
