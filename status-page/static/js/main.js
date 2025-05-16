@@ -27,6 +27,7 @@ function createOrUpdateUser(ip, timestampStr) {
     el.innerHTML = `
       <div class="status" id="status-${ip}"></div>
       <div class="ip">${ip}</div>
+      <div class="oiia-wrapper"><div class="oiia"></div></div>
       <div class="timestamp" id="timestamp-${ip}">${timestamp.toLocaleString()}</div>
     `;
     users[ip] = { ip, timestamp, el };
@@ -59,6 +60,8 @@ function updateColors() {
   }
 
   requestAnimationFrame(()=>{
+    const movedElements = [];
+    const movedOiiaElements = [];
     for (const user of userList) {
       const el = user.el;
       const firstRect = firstRects.get(el);
@@ -66,13 +69,34 @@ function updateColors() {
   
       const deltaX = firstRect.left - lastRect.left;
       const deltaY = firstRect.top - lastRect.top;
-  
-      el.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-      el.style.transition = "transform 0s";
-  
+      
+      if (deltaX !==0 || deltaY !==0) {
+        const oiiaEl = el.querySelector(".oiia-wrapper .oiia");
+        if (oiiaEl) {
+          oiiaEl.style.backgroundPositionY = `0px`;
+          movedElements.push(oiiaEl);
+        }
+        if (deltaY > 0) {
+          movedOiiaElements.push(oiiaEl);
+        }
+        
+        el.style.position = "relative";
+        el.style.zIndex = "1000";
+        el.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        el.style.transition = "transform 0s";
+      }
+
       requestAnimationFrame(()=>{
         el.style.transform = "";
-        el.style.transition = "transform 0.8s ease"
+        el.style.transition = "transform 0.8s ease";
+
+        el.addEventListener("transitionend", function handler(e) {
+          if (e.propertyName === "transform") {
+            el.style.zIndex = "";
+            el.removeEventListener("transitionend", handler);
+          }
+          el.style.position = "";
+        });
       });
   
       const ageSec = (now - user.timestamp) / 1000;
@@ -91,7 +115,32 @@ function updateColors() {
   
       statusEl.style.backgroundColor = color;
     }
+    animateOiiaElements(movedElements);
   });
+}
+
+function animateOiiaElements(elements) {
+  for (const el of elements) {
+    if (!el) return;
+
+    const frameHeight = 200;
+    const totalFrames = 60;
+    const fps = 120;
+    const duration = 1000*(totalFrames) / fps;
+    let currentFrame = 0;
+    const step = () => {
+
+      if (currentFrame >=totalFrames) {
+        el.style.backgroundPositionY = `0px`
+        return;
+      }
+      el.style.backgroundPositionY = `-${currentFrame*frameHeight}px`
+      currentFrame++;
+      setTimeout(step, 1000/fps);
+    }
+    step();
+
+  }
 }
 
 setInterval(updateColors, 1000);

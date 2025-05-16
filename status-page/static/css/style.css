@@ -9,6 +9,11 @@ h1 {
   color: rgba(221, 222, 226);
 }
 
+#users {
+  cursor: default;
+  transform: none;
+}
+
 .user {
   display: flex;
   align-items: center;
@@ -20,9 +25,13 @@ h1 {
   opacity: 1;
   transform: translateY(0);
   transition: transform 0.8s ease, background-color 0.2s linear;
-  will-change: transform;
   position: relative;
   min-height: 20px;
+  z-index: auto;
+}
+
+.status.loggedoff {
+  background-color: red;
 }
 
 .user.new {
@@ -57,4 +66,42 @@ h1 {
 .timestamp {
   font-size: 0.9em;
   color: rgba(221, 222, 226);
+}
+
+.oiia {
+  width: 200px;
+  height: 200px;
+  background-image: url('../img/oiia-sprite.png');
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  transform: scale(0.2);
+  transform-origin: top left;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+@keyframes play-sprite-once {
+  from {
+    background-position: 0 0px;
+  }
+  to {
+    background-position: 0 -11800px;
+  }
+}
+
+.oiia.animating {
+  animation-name: play-sprite-once;
+  animation-duration: 1s;
+  animation-timing-function: steps(60);
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+.oiia-wrapper {
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+
 }
