@@ -1,3 +1,49 @@
+const protocol = location.protocol === "https:" ? "wss" : "ws";
+const ws = new WebSocket(`${protocol}://${location.hostname}/online/ws`);
+
+const users = {};
+const usersContainer = document.getElementById("users");
+
+const GREEN = [0, 200, 0];
+const ORANGE = [255, 165, 0];
+const GRAY = [128, 128, 128];
+const PHASE1 = 3600;
+const PHASE2 = 86400;
+
+function lerpColor(c1, c2, t) {
+  const r = Math.round(c1[0] + (c2[0] - c1[0]) * t);
+  const g = Math.round(c1[1] + (c2[1] - c1[1]) * t);
+  const b = Math.round(c1[2] + (c2[2] - c1[2]) * t);
+  return `rgb(${r},${g},${b})`;
+}
+
+function createOrUpdateUser(ip, timestampStr) {
+  const timestamp = new Date(timestampStr);
+  let user = users[ip];
+
+  if (!user) {
+    const el = document.createElement("div");
+    el.className = "user new";
+    el.innerHTML = `
+      <div class="status" id="status-${ip}"></div>
+      <div class="ip">${ip}</div>
+      <div class="oiia-wrapper"><div class="oiia"></div></div>
+      <div class="timestamp" id="timestamp-${ip}">${timestamp.toLocaleString()}</div>
+    `;
+    users[ip] = { ip, timestamp, el };
+    usersContainer.appendChild(el);
+    setTimeout(() => el.classList.remove("new"), 600);
+  } else {
+    if (+user.timestamp !== +timestamp) {
+      user.timestamp = timestamp;
+      const tsEl = document.getElementById(`timestamp-${ip}`);
+      if (tsEl) {
+        tsEl.textContent = timestamp.toLocaleString();
+      }
+    }
+  }
+}
+
 function updateColors() {
   const now = new Date();
   const userList = Object.values(users);
@@ -33,10 +79,10 @@ function updateColors() {
         if (deltaY > 0) {
           movedOiiaElements.push(oiiaEl);
         }
-        el.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-        el.style.transition = "transform 0s";
         el.style.position = "relative";
         el.style.zIndex = "1000";
+        el.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        el.style.transition = "transform 0s";
       }
   
       requestAnimationFrame(()=>{
@@ -48,6 +94,7 @@ function updateColors() {
             el.style.zIndex = "";
             el.removeEventListener("transitionend", handler);
           }
+          el.style.position = "";
         });
       });
 
@@ -69,4 +116,37 @@ function updateColors() {
     }
     animateOiiaElements(movedOiiaElements);
   });
+}
+
+function animateOiiaElements(elements) {
+  for (const el of elements) {
+    if (!el) return;
+
+    const frameHeight = 200;
+    const totalFrames = 60;
+    const fps = 120;
+    const duration = 1000*(totalFrames) / fps;
+    let currentFrame = 0;
+    const step = () => {
+
+      if (currentFrame >=totalFrames) {
+        el.style.backgroundPositionY = `0px`
+        return;
+      }
+      el.style.backgroundPositionY = `-${currentFrame*frameHeight}px`
+      currentFrame++;
+      setTimeout(step, 1000/fps);
+    }
+    step();
+
+  }
+}
+
+setInterval(updateColors, 1000);
+
+ws.onmessage = (event) => {
+  let data = JSON.parse(event.data);
+  if (data.ip && data.timestamp) {
+    createOrUpdateUser(data.ip, data.timestamp);
+  }
 }
