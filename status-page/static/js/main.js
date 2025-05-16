@@ -143,6 +143,24 @@ function animateOiiaElements(elements) {
   }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+  const toggle = document.getElementById("oiia-toggle");
+
+  function updateOiiaVisibility() {
+    const show = toggle.checked;
+    document.querySelectorAll(".oiia").forEach(el => {
+      el.classList.toggle("hidden", !show);
+    });
+  }
+
+  toggle.addEventListener("change", updateOiiaVisibility);
+
+  const observer = new MutationObserver(() => updateOiiaVisibility());
+  observer.observe(document.getElementById("users"), { childList: true, subtree: true });
+
+  updateOiiaVisibility();
+});
+
 setInterval(updateColors, 1000);
 
 ws.onmessage = (event) => {

@@ -105,3 +105,10 @@ h1 {
   flex-shrink: 0;
 
 }
+
+.toggle-container {
+  margin-bottom: 10px;
+}
+.oiia.hidden {
+  display: none;
+}
