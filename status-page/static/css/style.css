@@ -162,3 +162,8 @@ h1 {
 .oiia.hidden {
   display: none;
 }
+
+.switch-oiia {
+  font-weight: bold;
+  color: rgba(221, 222, 226);
+}
