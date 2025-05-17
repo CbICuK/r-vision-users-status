@@ -100,4 +100,4 @@ docker logs -n 10 -f r-vision-lts-nginx-1
 
 ## Example
 
-![](https://github.com/CbICuK/example.gif)
+![](https://github.com/CbICuK/r-vision-users-status/blob/main/example.gif?raw=true)
