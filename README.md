@@ -97,3 +97,7 @@ docker logs -n 10 -f r-vision-lts-nginx-1
 ## Использование 
 
 Страница с монторингом доступна по ссылке `http(s)://<FQDN вашего сервера>/online`
+
+## Example
+
+![](https://github.com/CbICuK/example.gif)
