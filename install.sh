@@ -178,6 +178,6 @@ fi
 sed -E "s|^([[:space:]]*GID=)[0-9]+|\1$DOCKER_GID|" "logreader/Dockerfile"
 
 docker-compose build
-docker up -d
+docker-compose up -d
 cp online.location /opt/r-vision/data/smp/volumes/nginx/
 docker restart $NGINX_CONTAINER
