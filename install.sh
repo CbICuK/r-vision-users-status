@@ -28,6 +28,8 @@ REDIS_BROKER_HOST=$(yq '.services[].hostname' "$DOCKER_COMPOSE_FILE" | grep redi
 WEB_NAME=$(yq '.services[].hostname' "$DOCKER_COMPOSE_FILE" | grep page)
 SSL_CA_CERT="CA.crt"
 
+echo "Docker group id $DOCKER_GID"
+
 if ! cat .env | grep NGINX_CONTAINER &> /dev/null; then
     echo "NGINX_CONTAINER=$NGINX_CONTAINER" >> ".env"
 else
@@ -175,7 +177,7 @@ else
     done
 fi
 
-sed -E "s|^([[:space:]]*GID=)[0-9]+|\1$DOCKER_GID|" "logreader/Dockerfile"
+sed -i -E "s|^([[:space:]]*GID=)[0-9]+|\1$DOCKER_GID|" "logreader/Dockerfile"
 
 docker-compose build
 docker-compose up -d
