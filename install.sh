@@ -175,6 +175,7 @@ else
     for SERVICE in "${SERVICE_NAMES[@]}"; do
         if [ -f "$SERVICE/Dockerfile" ]; then
             sed -i -E 's/^.*http_proxy.*$//' "$SERVICE/Dockerfile"
+            sed -i -E 's/^.*https_proxy.*$//' "$SERVICE/Dockerfile"
         fi
     done
 fi

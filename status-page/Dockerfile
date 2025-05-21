@@ -16,7 +16,10 @@ RUN addgroup --gid $GID $UNAME && \
     adduser --disabled-password --ingroup "$UNAME" --uid $UID $UNAME
 
 RUN apk update && apk add --no-cache \
-    ca-certificates
+    ca-certificates 
+
+COPY CA.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates
 
 USER $UNAME
 

@@ -21,6 +21,9 @@ RUN apk update && apk add --no-cache \
     postgresql-dev \
     ca-certificates
 
+COPY CA.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
 USER $UNAME
 
 WORKDIR /app
@@ -30,8 +33,5 @@ COPY --chown=$UID:$GID requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY --chown=$UID:$GID . .
-
-COPY CA.crt /usr/local/share/ca-certificates/
-RUN update-ca-certificates
 
 CMD ["python3", "app.py"]
