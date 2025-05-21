@@ -83,6 +83,7 @@ L  = Moscow
 O  = SYSA INC
 OU = DIB
 CN = DEFAULT_CN
+emailAddress = andrew@sysa.ru
 
 [ req_ext ]
 subjectAltName = @alt_names
@@ -93,17 +94,18 @@ DNS.1 = DEFAULT_DNS
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
-keyUsage = digitalSignature, keyEncipherment
+keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth, clientAuth
 subjectAltName = @alt_names
 EOF
 
 echo "Создание корневого сертификата..."
 openssl req -x509 -newkey rsa:4096 -days 3650 -nodes \
-    -subj "/C=RU/ST=Moscow/L=Moscow/O=SYSA INC/OU=DIB/CN=Root-CA" \
+    -subj "/C=RU/ST=Moscow/L=Moscow/O=SYSA INC/OU=DIB/CN=Root-CA/emailAddress=andrew@sysa.ru" \
     -keyout "$CERT_DIR/ca.key.pem" -out "$CERT_DIR/ca.cert.pem" \
-    -addext "keyUsage=keyCertSign, cRLSign" \
-    -addext "basicConstraints=critical,CA:TRUE,pathlen:0" > /dev/null 2>&1
+    -addext "basicConstraints=critical,CA:TRUE,pathlen:0" \
+    -addext "keyUsage=critical,digitalSignature,keyEncipherment,keyCertSign,cRLSign" \
+    -addext "extendedKeyUsage=serverAuth,clientAuth" > /dev/null 2>&1
 
 
 for FOLDER in "${SERVICE_FOLDERS[@]}"; do
