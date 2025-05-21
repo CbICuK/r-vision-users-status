@@ -124,7 +124,7 @@ generate_cert() {
     sed -i "s/DEFAULT_CN/$CN/" "$CONF_FILE"
     sed -i "s/DEFAULT_DNS/$DNS_ALT/" "$CONF_FILE"
 
-    openssl req -new -nodes -newkey rsa:2048 \
+    openssl req -new -nodes -newkey rsa:4096 \
         -keyout "$CERT_DIR/${NAME}.key.pem" \
         -out "$CERT_DIR/${NAME}.csr.pem" \
         -config "$CONF_FILE" > /dev/null 2>&1
