@@ -139,8 +139,8 @@ echo "Найденные сервисы: ${SERVICE_NAMES[@]}"
 for SERVICE in "${SERVICE_NAMES[@]}"; do
     CN="$(echo "$SERVICE service" | sed 's/-/ /g; s/\b\(.\)/\u\1/g')"  # Преобразуем имя в заглавный стиль
     generate_cert "$SERVICE" "$CN" "$SERVICE"
-    mv "$CERT_DIR/${SERVICE}.cert.pem" "${SERVICE}/"
-    mv "$CERT_DIR/${SERVICE}.key.pem" "${SERVICE}/"
+    cp "$CERT_DIR/${SERVICE}.cert.pem" "${SERVICE}/"
+    cp "$CERT_DIR/${SERVICE}.key.pem" "${SERVICE}/"
 done
 
 echo "Все сертификаты успешно созданы в $CERT_DIR"
