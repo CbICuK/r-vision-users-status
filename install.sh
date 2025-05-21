@@ -170,7 +170,7 @@ if [[ "$USE_PROXY" == "y" || "$USE_PROXY" == "yes" ]]; then
 else
     for SERVICE in "${SERVICE_NAMES[@]}"; do
         if [ -f "$SERVICE/Dockerfile" ]; then
-            sed -i '/s/^.*http_proxy.*$//' "$SERVICE/Dockerfile"
+            sed -i -E 's/^.*http_proxy.*$//' "$SERVICE/Dockerfile"
         fi
     done
 fi
