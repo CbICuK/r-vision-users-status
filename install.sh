@@ -70,9 +70,9 @@ OPENSSL_CONF_TEMPLATE="$CERT_DIR/openssl_template.cnf"
 
 cat > "$OPENSSL_CONF_TEMPLATE" <<EOF
 [ req ]
-default_bits       = 2048
+default_bits       = 4096
 prompt             = no
-default_md         = sha256
+default_md         = sha512
 distinguished_name = dn
 req_extensions     = req_ext
 
