@@ -1,10 +1,10 @@
 FROM python:3.13.3-alpine3.21
 
-ARG https_proxy=http://proxy:3128 \
-    http_proxy=http://proxy:3128 \
-    UNAME=appuser \
+ARG UNAME=appuser \
     UID=1111 \
     GID=444
+
+ARG https_proxy=http://proxy:3128 http_proxy=http://proxy:3128
 
 ENV PATH="/home/$UNAME/.local/bin:$PATH" \
     FLASK_APP="app.py" \

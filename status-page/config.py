@@ -14,7 +14,7 @@ redis_connect = redis.Redis(
     db=settings.REDIS_DB_N,
     ssl=True,
     ssl_cert_reqs="required",
-    ssl_keyfile="status-page.key",
-    ssl_certfile="status-page.crt",
+    ssl_keyfile="status-page.key.pem",
+    ssl_certfile="status-page.cert.pem",
     ssl_ca_certs=settings.SSL_CA_CERT
 )

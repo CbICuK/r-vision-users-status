@@ -5,7 +5,7 @@ services:
     container_name: online-status-page
     depends_on:
       - redis
-    hostname: "web"
+    hostname: status-page
     build: ./status-page
     environment:
       - TZ='Europe/Moscow'
@@ -34,11 +34,11 @@ services:
     networks:
       - smp
 
-  log-reader:
+  logreader:
     container_name: online-log-reader
     depends_on:
       - redis
-    hostname: "logreader"
+    hostname: logreader
     build: ./log-reader
     environment:
       - TZ='Europe/Moscow'
@@ -52,7 +52,6 @@ services:
       - ./.env
     networks:
       - smp
-
 
 volumes:
   redis_data:

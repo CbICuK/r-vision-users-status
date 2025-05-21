@@ -26,8 +26,8 @@ redis_connect = redis.Redis(
     db=settings.REDIS_DB_N,
     ssl=True,
     ssl_cert_reqs="required",
-    ssl_keyfile="log-reader.key",
-    ssl_certfile="log-reader.crt",
+    ssl_keyfile="logreader.key.pem",
+    ssl_certfile="logreader.cert.pem",
     ssl_ca_certs=settings.SSL_CA_CERT
 )
 
