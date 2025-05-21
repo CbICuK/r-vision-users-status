@@ -21,7 +21,7 @@ RUN apk update && apk add --no-cache \
     postgresql-dev \
     ca-certificates
 
-COPY CA.crt /usr/local/share/ca-certificates/
+COPY --chown=$UID:$GID ca.cret.pem /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
 USER $UNAME
