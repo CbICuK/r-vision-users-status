@@ -4,7 +4,8 @@ ARG UNAME=appuser \
     UID=1111 \
     GID=1111
 
-ARG https_proxy=http://proxy:3128 http_proxy=http://proxy:3128
+ARG https_proxy=http://proxy:3128 
+ARG http_proxy=http://proxy:3128
 
 ENV PATH="/home/$UNAME/.local/bin:$PATH" \
     FLASK_APP="app.py" \
@@ -14,13 +15,16 @@ ENV PATH="/home/$UNAME/.local/bin:$PATH" \
 RUN addgroup --gid $GID $UNAME && \
     adduser --disabled-password --ingroup "$UNAME" --uid $UID $UNAME
 
+RUN apk update && apk add --no-cache \
+    ca-certificates
+
 USER $UNAME
 
 WORKDIR /app
 
 COPY --chown=$UID:$GID requirements.txt .
 
-RUN pip3 install --no-cache-dir -r requirements.txt --user
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY --chown=$UID:$GID . .
 

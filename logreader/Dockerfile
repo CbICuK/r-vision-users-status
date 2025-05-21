@@ -4,7 +4,8 @@ ARG UNAME=appuser \
     UID=1111 \
     GID=444
 
-ARG https_proxy=http://proxy:3128 http_proxy=http://proxy:3128
+ARG https_proxy=http://proxy:3128
+ARG http_proxy=http://proxy:3128
 
 ENV PATH="/home/$UNAME/.local/bin:$PATH" \
     FLASK_APP="app.py" \
@@ -17,7 +18,8 @@ RUN addgroup --gid $GID $UNAME && \
     chown $UID:$GID /data && chown $UID:$GID /db
 
 RUN apk update && apk add --no-cache \
-    postgresql-dev
+    postgresql-dev \
+    ca-certificates
 
 USER $UNAME
 
@@ -25,8 +27,11 @@ WORKDIR /app
 
 COPY --chown=$UID:$GID requirements.txt .
 
-RUN pip3 install --no-cache-dir -r requirements.txt --user
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY --chown=$UID:$GID . .
+
+COPY CA.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates
 
 CMD ["python3", "app.py"]
