@@ -39,7 +39,7 @@ services:
     depends_on:
       - redis
     hostname: logreader
-    build: ./log-reader
+    build: ./logreader
     environment:
       - TZ='Europe/Moscow'
     restart: unless-stopped
