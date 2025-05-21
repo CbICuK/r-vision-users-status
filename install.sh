@@ -101,7 +101,9 @@ EOF
 echo "Создание корневого сертификата..."
 openssl req -x509 -newkey rsa:4096 -days 3650 -nodes \
     -subj "/C=RU/ST=Moscow/L=Moscow/O=SYSA INC/OU=DIB/CN=Root-CA" \
-    -keyout "$CERT_DIR/ca.key.pem" -out "$CERT_DIR/ca.cert.pem" > /dev/null 2>&1
+    -keyout "$CERT_DIR/ca.key.pem" -out "$CERT_DIR/ca.cert.pem" \
+    -addext "keyUsage=keyCertSign, cRLSign" \
+    -addext "basicConstraints=critical,CA:TRUE,pathlen:0" > /dev/null 2>&1
 
 
 for FOLDER in "${SERVICE_FOLDERS[@]}"; do
