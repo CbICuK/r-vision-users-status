@@ -26,7 +26,7 @@ NGINX_CONTAINER=$(docker ps -f label="com.docker.compose.service"="nginx" -f nam
 DB_CONTAINER=$(docker ps -f label="com.docker.compose.service"="postgresql" -f name="smp" --format '{{.Names}}')
 REDIS_BROKER_HOST=$(yq '.services[].hostname' "$DOCKER_COMPOSE_FILE" | grep redis)
 WEB_NAME=$(yq '.services[].hostname' "$DOCKER_COMPOSE_FILE" | grep page)
-SSL_CA_CERT="CA.crt"
+SSL_CA_CERT="ca.cert.pem"
 
 echo "Docker group id $DOCKER_GID"
 
@@ -107,7 +107,7 @@ openssl req -x509 -newkey rsa:4096 -days 3650 -nodes \
 
 
 for FOLDER in "${SERVICE_FOLDERS[@]}"; do
-    cp "$CERT_DIR/ca.cert.pem" "$FOLDER/CA.crt"
+    cp "$CERT_DIR/$SSL_CA_CERT" "$FOLDER/$SSL_CA_CERT"
 done
 
 generate_cert() {
