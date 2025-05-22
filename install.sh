@@ -67,6 +67,7 @@ CERT_DIR="./certs"
 mkdir -p "$CERT_DIR"
 
 OPENSSL_CONF_TEMPLATE="$CERT_DIR/openssl_template.cnf"
+OPENSSL_CA_CONF="$CERT_DIR/openssl_ca.cnf"
 
 cat > "$OPENSSL_CONF_TEMPLATE" <<EOF
 [ req ]
@@ -92,7 +93,7 @@ subjectAltName = @alt_names
 DNS.1 = DEFAULT_DNS
 
 [ v3_ext ]
-#authorityKeyIdentifier=keyid,issuer
+authorityKeyIdentifier = keyid:always,issuer
 basicConstraints=CA:FALSE
 subjectKeyIdentifier = hash
 keyUsage = critical, digitalSignature, keyEncipherment
@@ -100,13 +101,34 @@ extendedKeyUsage = serverAuth, clientAuth
 subjectAltName = @alt_names
 EOF
 
+cat > "$OPENSSL_CA_CONF" <<EOF
+[ req ]
+distinguished_name = dn
+x509_extensions = v3_ca
+string_mask = utf8only
+
+[ dn ]
+C  = RU
+ST = Moscow
+L  = Moscow
+O  = SYSA INC
+OU = DIB
+CN = DEFAULT_CN
+emailAddress = andrew@sysa.ru
+
+[ v3_ca ]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints=critical, CA:true
+keyUsage = critical,digitalSignature,keyEncipherment,keyCertSign,cRLSign
+extendedKeyUsage = serverAuth,clientAuth
+EOF
+
+
 echo "Создание корневого сертификата..."
-openssl req -x509 -newkey rsa:4096 -days 3650 -nodes \
+openssl req -x509 -newkey rsa:4096 -days 3650 -nodes -sha512 \
     -subj "/C=RU/ST=Moscow/L=Moscow/O=SYSA INC/OU=DIB/CN=Root-CA/emailAddress=andrew@sysa.ru" \
-    -keyout "$CERT_DIR/ca.key.pem" -out "$CERT_DIR/ca.cert.pem" \
-    -addext "basicConstraints=critical,CA:TRUE" \
-    -addext "keyUsage=critical,digitalSignature,keyEncipherment,keyCertSign,cRLSign" \
-    -addext "extendedKeyUsage=serverAuth,clientAuth" > /dev/null 2>&1
+    -keyout "$CERT_DIR/ca.key.pem" -out "$CERT_DIR/ca.cert.pem" -config "$OPENSSL_CA_CONF" > /dev/null 2>&1
 
 
 for FOLDER in "${SERVICE_FOLDERS[@]}"; do
@@ -125,7 +147,7 @@ generate_cert() {
     sed -i "s/DEFAULT_CN/$CN/" "$CONF_FILE"
     sed -i "s/DEFAULT_DNS/$DNS_ALT/" "$CONF_FILE"
 
-    openssl req -new -nodes -newkey rsa:4096 \
+    openssl req -new -nodes -newkey rsa:4096 -sha512 \
         -keyout "$CERT_DIR/${NAME}.key.pem" \
         -out "$CERT_DIR/${NAME}.csr.pem" \
         -config "$CONF_FILE" > /dev/null 2>&1
